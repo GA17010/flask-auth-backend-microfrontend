@@ -1,0 +1,35 @@
+// filepath: /GitHub/flask-auth-backend-microfrontend/.gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+
+# Environment variables
+.env
+
+# Flask instance folder
+instance/
+
+# Migrations
+migrations/versions/*.pyc
+migrations/versions/*.pyo
+
+# Logs
+*.log
+
+# Database
+*.sqlite3
+*.db
+
+# IDE specific files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
