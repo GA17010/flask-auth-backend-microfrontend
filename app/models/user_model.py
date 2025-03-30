@@ -64,7 +64,7 @@ class User(db.Model):
             'id': self.id,
             'full_name': self.full_name,
             'company': self.company,
-            'company': self.company,
+            'email': self.email,
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
