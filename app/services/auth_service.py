@@ -93,7 +93,7 @@ def refresh_token():
     
     payload, error = verify_token(refresh_token_cookie, 'refresh')
     if error:
-        return {'data': {'message': f'Token de refresco {error}'}}, 403
+        return {'data': {'message': error}}, 401
     if payload and payload.get('user_agent') != request.headers.get('User-Agent'):
         return {'data': {'message': 'User-Agent no coincide'}}, 403
 
