@@ -64,7 +64,6 @@ def login_user(data):
 
 def check_auth():
     access_token_cookie = request.cookies.get('accessToken')
-    print(access_token_cookie)
     if not access_token_cookie:
         return {'data': {'message': 'No autorizado'}}, 401
     
