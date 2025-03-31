@@ -24,9 +24,12 @@ jobs:
       - name: 🔽 Instalar Newman
         run: npm install -g newman
 
+      - name: 🐳 Instalar Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose
+
       - name: 🚀 Levantar el backend
         run: |
-          docker-compose up -d
+          docker compose up -d
           sleep 10  # Esperar a que el servicio esté disponible
 
       - name: 🛠️ Ejecutar pruebas con Newman
