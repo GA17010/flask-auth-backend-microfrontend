@@ -17,4 +17,5 @@ COPY . .
 EXPOSE 5000
 
 # Define el comando de inicio
-CMD ["python3", "wsgi.py"]
+CMD ["flask", "run", "--host=0.0.0.0"]
+
