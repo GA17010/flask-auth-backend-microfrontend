@@ -2,46 +2,81 @@ name: API Tests with Postman
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      - name: 📥 Clonar el repositorio
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Build backend image
+        run: docker build -t flask-backend .
+        
+      - name: Start backend
+        run: |
+          docker run -d \
+            --name backend \
+            --network host \
+            -e FLASK_ENV=testing \
+            -e SECRET_KEY=secretkey \
+            -e DATABASE_URL=postgresql+psycopg2://user:password@localhost:5432/testdb \
+            -e CORS_ORIGINS=http://localhost:8080,http://localhost:8082 \
+            -p 5000:5000 \
+            flask-backend
+          
+          # Esperar a que el backend esté listo
+          while ! curl -s http://localhost:5000/health-check; do
+            sleep 1
+          done
 
-      - name: 🏗️ Configurar Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-
-      - name: 🔽 Instalar Newman
+          
+      - name: Install Newman
         run: npm install -g newman
 
-      - name: 🐳 Instalar Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
-
-      - name: 🚀 Levantar el backend
+      - name: Run Postman tests
         run: |
-          docker compose up -d
-          sleep 10  # Esperar a que el servicio esté disponible
+          newman run tests/postman/Flask_auth_test_backend.postman_collection.json \
+            --env-var "baseUrl=http://localhost:5000" \
+            --global-var "email=testuser@example.com" \
+            --global-var "password=Password@123"
 
-      - name: 🛠️ Ejecutar pruebas con Newman
-        run: newman run tests/postman/Flask_auth_test_backend.postman_collection.json
-
-      - name: 📊 Generar reporte en HTML
+      - name: Generate HTML report
+        if: always()
         run: |
-          newman run tests/postman/Flask_auth_test_backend.postman_collection.json -r html
-          mv newman/* report.html
-
-      - name: 📤 Subir reporte como artefacto
-        uses: actions/upload-artifact@v4
+          newman run tests/postman/Flask_auth_test_backend.postman_collection.json \
+            -r html \
+            --env-var "baseUrl=http://localhost:5000" \
+            --reporters html \
+            --reporter-html-export report.html
+            
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: newman-report
           path: report.html

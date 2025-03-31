@@ -213,7 +213,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:5000",
+			"value": "http://backend:5000",
 			"type": "string"
 		},
 		{
