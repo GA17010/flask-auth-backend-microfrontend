@@ -38,9 +38,9 @@ jobs:
 
       - name: 🛠️ Ejecutar migraciones en la base de datos
         run: |
-          docker exec -it flask-auth-backend-microfrontend-backend-1 flask db upgrade
-          docker exec -it flask-auth-backend-microfrontend-backend-1 flask db migrate -m "Initial migration"
-          docker exec -it flask-auth-backend-microfrontend-backend-1 flask db upgrade
+          docker exec flask-auth-backend-microfrontend-backend-1 flask db upgrade
+          docker exec flask-auth-backend-microfrontend-backend-1 flask db migrate -m "Initial migration"
+          docker exec flask-auth-backend-microfrontend-backend-1 flask db upgrade
 
       - name: 🛠️ Ejecutar pruebas con Newman
         run: newman run tests/postman/Flask_auth_test_backend.postman_collection.json -e tests/postman/MiAmbiente.postman_environment.json
