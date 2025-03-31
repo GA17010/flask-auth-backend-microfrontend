@@ -43,11 +43,11 @@ jobs:
           docker exec flask-auth-backend-microfrontend-backend-1 flask db upgrade
 
       - name: 🛠️ Ejecutar pruebas con Newman
-        run: newman run tests/postman/Flask_auth_test_backend.postman_collection.json -e tests/postman/MiAmbiente.postman_environment.json
+        run: newman run tests/postman/Flask_auth_test_backend.postman_collection.json
 
       - name: 📊 Generar reporte en HTML
         run: |
-          newman run tests/postman/Flask_auth_test_backend.postman_collection.json -e tests/postman/MiAmbiente.postman_environment.json -r html
+          newman run tests/postman/Flask_auth_test_backend.postman_collection.json -r html
           mv newman/* report.html
 
       - name: 📤 Subir reporte como artefacto
