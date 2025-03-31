@@ -1,0 +1,44 @@
+name: API Tests with Postman
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🔽 Instalar Newman
+        run: npm install -g newman
+
+      - name: 🚀 Levantar el backend
+        run: |
+          docker-compose up -d
+          sleep 10  # Esperar a que el servicio esté disponible
+
+      - name: 🛠️ Ejecutar pruebas con Newman
+        run: newman run tests/postman/Flask_auth_test_backend.postman_collection.json -e tests/postman/MiAmbiente.postman_environment.json
+
+      - name: 📊 Generar reporte en HTML
+        run: |
+          newman run tests/postman/Flask_auth_test_backend.postman_collection.json -e tests/postman/MiAmbiente.postman_environment.json -r html
+          mv newman/* report.html
+
+      - name: 📤 Subir reporte como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: report.html
