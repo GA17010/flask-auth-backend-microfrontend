@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate, ValidationError
+from marshmallow import Schema, fields, validate, ValidationError, post_load
 
 def validate_has_uppercase(password):
     if not any(c.isupper() for c in password):
@@ -17,6 +17,12 @@ class UserSchema(Schema):
 
 class RegistrationSchema(UserSchema):
     confirm_password = fields.Str(required=True, load_only=True)
+    
+    @post_load
+    def validate_passwords_match(self, data, **kwargs):
+        if data["password"] != data["confirm_password"]:
+            raise ValidationError({"confirm_password": "Passwords must match."})
+        return data
 
 class LoginSchema(Schema):
     email = fields.Email(required=True)

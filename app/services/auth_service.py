@@ -13,9 +13,6 @@ def register_user(data):
     except ValidationError as err:
         return {'data': {'message': "Datos invalidos"}}, 400
     
-    if validated_data.get('password') != validated_data.get('confirm_password'):
-        return {'data': {'message': 'Las contraseñas no coinciden'}}, 400
-    
     if find_user_by_email(validated_data.get('email')):
         return {'data': {'message': 'El usuario ya existe'}}, 409
 
@@ -67,11 +64,11 @@ def login_user(data):
 
 def check_auth():
     access_token_cookie = request.cookies.get('accessToken')
-
+    print(access_token_cookie)
     if not access_token_cookie:
         return {'data': {'message': 'No autorizado'}}, 401
     
-    payload, error = verify_token(access_token_cookie)
+    payload, error = verify_token(access_token_cookie, 'access')
     if error:
         return {'data': {'message': error}}, 401
     if payload and payload.get('user_agent') != request.headers.get('User-Agent'):
@@ -110,7 +107,7 @@ def refresh_token():
     return response, 200
 
 def logout_user():
-    response = jsonify({'data': {'mensaje': 'Seccion Cerrada'}})
+    response = jsonify({'data': {'message': 'Seccion Cerrada'}})
     response.delete_cookie('accessToken', httponly=True, secure=True, samesite='None')
     response.delete_cookie('refreshToken', httponly=True, secure=True, samesite='None')
     return response, 200
