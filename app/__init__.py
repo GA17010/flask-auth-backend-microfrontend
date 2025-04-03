@@ -20,13 +20,16 @@ def create_app():
     jwt.init_app(app)
 
     CORS(app, resources={r"/auth/*": {"origins": app.config['CORS_ORIGINS'], "supports_credentials": True}})
+    CORS(app, resources={r"/recovery/*": {"origins": app.config['CORS_ORIGINS'], "supports_credentials": True}})
     CORS(app, resources={r"/user/*": {"origins": app.config['CORS_ORIGINS'], "supports_credentials": True}})
 
     from .routes.auth_routes import auth_bp
     from .routes.user_routes import user_bp
+    from .routes.recovery_routes import recovery_bp
     from .models import user_model
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(recovery_bp, url_prefix="/recovery")
     app.register_blueprint(user_bp, url_prefix="/user")
 
     return app

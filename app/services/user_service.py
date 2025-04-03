@@ -29,3 +29,13 @@ def delete_user(user):
     except Exception as e:
         db.session.rollback()
         return jsonify({"data": {"message": "Error Interno del Servidor"}}), 500
+    
+def update_password_user(user):
+    if not user:
+        return jsonify({"data": {"message": "Usuario no encontrado"}}), 404
+    
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"data": {"message": "Error Interno del Servidor"}}), 500
