@@ -1,6 +1,7 @@
 from app.database import db
 from flask import current_app
-from datetime import timezone, datetime
+from datetime import datetime
+import pytz
 
 class User(db.Model):
     """
@@ -42,8 +43,8 @@ class User(db.Model):
     company = db.Column(db.String(150), nullable=True)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/El_Salvador')))
+    updated_at = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/El_Salvador')), onupdate=datetime.now(pytz.timezone('America/El_Salvador')))
 
     def set_password(self, password):
         if not hasattr(current_app, 'bcrypt'):

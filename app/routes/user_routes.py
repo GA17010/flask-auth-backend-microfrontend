@@ -3,7 +3,7 @@ from app.models.user_model import User
 from app.services import user_service
 from app.database import db
 
-user_bp = Blueprint("user_bp", __name__)
+user_bp = Blueprint("user", __name__)
 
 @user_bp.route("/users", methods=["GET"])
 def get_users():

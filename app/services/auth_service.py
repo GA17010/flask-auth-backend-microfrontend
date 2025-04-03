@@ -3,10 +3,9 @@ from app.schemas.user_schema import RegistrationSchema, LoginSchema
 from marshmallow import ValidationError
 from app.utils.jwt_utils import create_access_token, create_refresh_token, verify_token
 from app.utils.password_utils import check_password
-from app.services.user_service import find_user_by_email
+from app.services.user_service import find_user_by_email, create_new_user
 
 def register_user(data):
-
     try:
         registration_schema = RegistrationSchema()
         validated_data =registration_schema.load(data)
@@ -16,7 +15,6 @@ def register_user(data):
     if find_user_by_email(validated_data.get('email')):
         return {'data': {'message': 'El usuario ya existe'}}, 409
 
-    from app.services.user_service import create_new_user
     new_user = create_new_user(validated_data)
 
     access_token = create_access_token(identity=new_user.email)
@@ -73,7 +71,6 @@ def check_auth():
     if payload and payload.get('user_agent') != request.headers.get('User-Agent'):
         return {'data': {'message': 'User-Agent no coincide'}}, 403
     
-    from app.services.user_service import find_user_by_email
     user = find_user_by_email(payload['identity'])
 
     if not user:
