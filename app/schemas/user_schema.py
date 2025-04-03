@@ -27,3 +27,11 @@ class RegistrationSchema(UserSchema):
 class LoginSchema(Schema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
+
+class ForgotPasswordSchema(Schema):
+    email = fields.Email(required=True, validate=validate.Length(min=8))
+
+class ResetPasswordSchema(Schema):
+    otp = fields.String(required=True, validate=validate.Length(equal=6))
+    email = fields.Email(required=True, validate=validate.Length(min=8))
+    password = fields.String(required=True, validate=[validate.Length(min=8, max=50), validate_has_uppercase, validate_has_special_char], load_only=True)
