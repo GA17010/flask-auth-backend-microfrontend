@@ -16,7 +16,7 @@ def forgot_password(data):
     email = validated_data.get('email')
     user = find_user_by_email(email)
     if not user:
-        return {'data': {'message': 'The user already exists'}}, 409
+        return {'data': {'message': 'The user does not exist'}}, 409
     
     otp = generate_otp()
     
