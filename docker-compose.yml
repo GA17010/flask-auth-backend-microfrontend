@@ -9,6 +9,9 @@ services:
       - SECRET_KEY=secretkey
       - DATABASE_URL=postgresql+psycopg2://user:password@db:5432/testdb
       - CORS_ORIGINS=http://localhost:8080,http://localhost:5000
+      - EMAIL_FROM=admin@example.com
+      - EMAIL_PASSWORD=xxxxxxx
+      - TIME_ZONE=America/El_Salvador
     depends_on:
       - db
 
