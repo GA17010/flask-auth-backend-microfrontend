@@ -88,7 +88,7 @@
 			"response": []
 		},
 		{
-			"name": "CheckAuth",
+			"name": "Check Auth",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -127,25 +127,7 @@
 			"response": []
 		},
 		{
-			"name": "Logout",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/auth/logout",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"auth",
-						"logout"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GetUsers",
+			"name": "Get Users",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -182,6 +164,24 @@
 						"user",
 						"users",
 						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/auth/logout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"logout"
 					]
 				}
 			},

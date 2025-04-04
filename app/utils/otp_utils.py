@@ -15,6 +15,7 @@ def save_otp_to_db(email, otp):
         new_otp = PasswordResetToken(email=email, otp=otp)
         db.session.add(new_otp)
         db.session.commit()
+        return True
     except Exception as e:
         db.session.rollback()
         return False
@@ -26,7 +27,6 @@ def verify_otp(email, otp, used):
         return False
 
     if otp_record:
-        print(current_app.config['TIME_ZONE'])
 
         expires_at_utc = otp_record.expires_at.replace(tzinfo=current_app.config['TIME_ZONE']) if otp_record.expires_at.tzinfo is None else otp_record.expires_at
 

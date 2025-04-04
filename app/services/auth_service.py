@@ -10,10 +10,10 @@ def register_user(data):
         registration_schema = RegistrationSchema()
         validated_data =registration_schema.load(data)
     except ValidationError as err:
-        return {'data': {'message': "Datos invalidos"}}, 400
+        return {'data': {'message': "Invalid data"}}, 400
     
     if find_user_by_email(validated_data.get('email')):
-        return {'data': {'message': 'El usuario ya existe'}}, 409
+        return {'data': {'message': 'The user already exists'}}, 409
 
     new_user = create_new_user(validated_data)
 
@@ -29,7 +29,7 @@ def register_user(data):
     encoded_access_token = jwt.encode(access_token_payload, current_app.config['SECRET_KEY'], algorithm='HS256')
     encoded_refresh_token = jwt.encode(refresh_token_payload, current_app.config['SECRET_KEY'], algorithm='HS256')
 
-    response = jsonify({'data': {'message': 'Registrado exitosamente', 'user': {'id': new_user.id, 'full_name': new_user.full_name, 'email': new_user.email}}})
+    response = jsonify({'data': {'message': 'Successfully registered', 'user': {'id': new_user.id, 'full_name': new_user.full_name, 'email': new_user.email}}})
     set_auth_cookies(response, encoded_access_token, encoded_refresh_token)
     return response, 201
 
@@ -38,12 +38,12 @@ def login_user(data):
         login_schema = LoginSchema()
         validated_data = login_schema.load(data)
     except ValidationError as err:
-        return {'data': {'message': "Datos invalidos"}}, 400
+        return {'data': {'message': "Invalid data"}}, 400
 
     user = find_user_by_email(validated_data.get('email'))
     
     if not user or not check_password(user.password, validated_data.get('password')):
-        return {'data': {'message': 'Credenciales incorrectas'}}, 401
+        return {'data': {'message': 'Incorrect credentials'}}, 401
     
     access_token = create_access_token(identity=user.email)
     refresh_token = create_refresh_token(identity=user.email)
@@ -56,14 +56,14 @@ def login_user(data):
     encoded_access_token = jwt.encode(access_token_payload, current_app.config['SECRET_KEY'], algorithm='HS256')
     encoded_refresh_token = jwt.encode(refresh_token_payload, current_app.config['SECRET_KEY'], algorithm='HS256')
 
-    response = jsonify({'data': {'message': 'Autenticado exitosamente', 'user': {'id': user.id, 'full_name': user.full_name, 'email': user.email}}})
+    response = jsonify({'data': {'message': 'Successfully authenticated', 'user': {'id': user.id, 'full_name': user.full_name, 'email': user.email}}})
     set_auth_cookies(response, encoded_access_token, encoded_refresh_token)
     return response, 200
 
 def check_auth():
     access_token_cookie = request.cookies.get('accessToken')
     if not access_token_cookie:
-        return {'data': {'message': 'No autorizado'}}, 401
+        return {'data': {'message': 'Not authorized'}}, 401
     
     payload, error = verify_token(access_token_cookie, 'access')
     if error:
@@ -74,21 +74,21 @@ def check_auth():
     user = find_user_by_email(payload['identity'])
 
     if not user:
-        return {'data': {'message': 'No autorizado'}}, 401
+        return {'data': {'message': 'Not authorized'}}, 401
     
-    return {'data': {'message': 'Token valido', 'user': {'id': user.id, 'full_name': user.full_name, 'email': user.email}}}, 200
+    return {'data': {'message': 'Token valid', 'user': {'id': user.id, 'full_name': user.full_name, 'email': user.email}}}, 200
 
 def refresh_token():
     refresh_token_cookie = request.cookies.get('refreshToken')
 
     if not refresh_token_cookie:
-        return {'data': {'message': 'No se proporcionó un token de refresco'}}, 401
+        return {'data': {'message': 'No token is provided'}}, 401
     
     payload, error = verify_token(refresh_token_cookie, 'refresh')
     if error:
         return {'data': {'message': error}}, 401
     if payload and payload.get('user_agent') != request.headers.get('User-Agent'):
-        return {'data': {'message': 'User-Agent no coincide'}}, 403
+        return {'data': {'message': 'User-Agent does not match'}}, 403
 
     new_access_token = create_access_token(identity=payload['identity'])
 
@@ -96,14 +96,13 @@ def refresh_token():
     new_access_token_payload['user_agent'] = request.headers.get('User-Agent')
 
     encoded_new_access_token = jwt.encode(new_access_token_payload, current_app.config['SECRET_KEY'], algorithm='HS256')
-    response = jsonify({'data': {'message': 'Token renovado exitosamente'}})
+    response = jsonify({'data': {'message': 'Token successfully renewed'}})
 
-    # set_auth_cookies(response, encoded_new_access_token)
     response.set_cookie('accessToken', encoded_new_access_token, httponly=True, secure=True, samesite='None')
     return response, 200
 
 def logout_user():
-    response = jsonify({'data': {'message': 'Seccion Cerrada'}})
+    response = jsonify({'data': {'message': 'Successfully logged out'}})
     response.delete_cookie('accessToken', httponly=True, secure=True, samesite='None')
     response.delete_cookie('refreshToken', httponly=True, secure=True, samesite='None')
     return response, 200

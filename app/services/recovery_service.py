@@ -11,26 +11,26 @@ def forgot_password(data):
         forgot_password_schema = ForgotPasswordSchema()
         validated_data =forgot_password_schema.load(data)
     except ValidationError as err:
-        return {'data': {'message': "Datos invalidos"}}, 400
+        return {'data': {'message': "Invalid Data"}}, 400
     
     email = validated_data.get('email')
     user = find_user_by_email(email)
     if not user:
-        return {'data': {'message': 'El usuario no existe'}}, 409
+        return {'data': {'message': 'The user already exists'}}, 409
     
     otp = generate_otp()
     
     result = save_otp_to_db(email, otp)
 
     if not result:
-        return jsonify({'data': {'message': 'Error de conexion!' }}), 500
+        return jsonify({'data': {'message': 'Error saving Code, please try again later' }}), 500
 
     try:
         send_email(user.full_name, otp, email)
     except Exception as e:
-        return jsonify({'data': {'message': 'Error al enviar correo!' }}), 500
+        return jsonify({'data': {'message': 'Error sending email, please try again later' }}), 500
 
-    response = jsonify({'data': {'message': 'Correo de recuperación enviado' }})
+    response = jsonify({'data': {'message': 'Recovery mail sent' }})
     return response, 200
 
 def verify_otp_service(data):
@@ -38,15 +38,15 @@ def verify_otp_service(data):
     otp = data.get('otp')
 
     if verify_otp(email, otp, False):
-        return jsonify({'data': {'message': 'OTP válido, procede a cambiar la contraseña'}}), 200
-    return jsonify({'data': {'message': 'OTP incorrecto o expirado'}}), 400
+        return jsonify({'data': {'message': 'Valid code, proceed to change the password'}}), 200
+    return jsonify({'data': {'message': 'Incorrect or expired code'}}), 400
 
 def reset_password(data):
     try:
         reset_password_schema = ResetPasswordSchema()
         validated_data = reset_password_schema.load(data)
     except ValidationError as err:
-        return {'data': {'message': 'Datos invalidos'}}
+        return {'data': {'message': 'Invalid Data'}}, 400
     
     otp = validated_data.get('otp')
     email = validated_data.get('email')
@@ -58,6 +58,6 @@ def reset_password(data):
         user.password = hash_password(new_password)
         update_password_user(user)
 
-        return jsonify({'data': {'message': 'Contraseña actualizada correctamente'}}), 200
+        return jsonify({'data': {'message': 'Password updated correctly'}}), 200
     
-    return jsonify({'data': {'message': 'Codigo inválido o expirado'}}), 400
+    return jsonify({'data': {'message': 'Invalid or expired code'}}), 400
