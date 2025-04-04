@@ -12,6 +12,7 @@ This project is a Flask-based backend for authentication and user management. It
 - **CORS Support**: Configured for cross-origin requests.
 - **Database Migrations**: Managed with Alembic.
 - **Environment Configuration**: Uses `.env` for sensitive data.
+- **Password Recovery**: OTP-based password reset functionality.
 
 ## Installation
 
@@ -37,6 +38,9 @@ This project is a Flask-based backend for authentication and user management. It
   ```env
   SECRET_KEY="your-secret-key"
   DATABASE_URL="your-database-url"
+  EMAIL_FROM="your-email@example.com"
+  EMAIL_PASSWORD="your-email-password"
+  TIME_ZONE="America/El_Salvador"
   ```
 
 5. Run database migrations:
@@ -60,6 +64,12 @@ This project is a Flask-based backend for authentication and user management. It
 
 ### User Routes
 - `GET /user/users`: Retrieve all users.
+- `DELETE /user/users/<id>`: Delete a user by ID.
+
+### Recovery Routes
+- `POST /recovery/forgot-password`: Request a password reset OTP.
+- `POST /recovery/verify-otp`: Verify the OTP for password reset.
+- `POST /recovery/reset-password`: Reset the password using the OTP.
 
 ## Project Structure
 
@@ -70,22 +80,39 @@ flask-auth-backend-microfrontend/
 │   ├── config.py
 │   ├── database.py
 │   ├── models/
-│   │   └── user_model.py
+│   │   ├── user_model.py
+│   │   └── password_reset_token_model.py
 │   ├── routes/
 │   │   ├── auth_routes.py
-│   │   └── user_routes.py
+│   │   ├── user_routes.py
+│   │   └── recovery_routes.py
 │   ├── schemas/
 │   │   └── user_schema.py
 │   ├── services/
 │   │   ├── auth_service.py
-│   │   └── user_service.py
+│   │   ├── user_service.py
+│   │   └── recovery_service.py
 │   ├── utils/
 │       ├── jwt_utils.py
-│       └── password_utils.py
+│       ├── password_utils.py
+│       ├── otp_utils.py
+│       └── email_utils.py
 ├── migrations/
 ├── requirements.txt
 ├── run.py
-└── wsgi.py
+├── wsgi.py
+├── Dockerfile
+├── docker-compose.yml
+└── tests/
+   ├── integration/
+   │   ├── test_auth.py
+   │   └── test_user.py
+   ├── postman/
+   │   └── Flask_auth_test_backend.postman_collection.json
+   └── unitary/
+      ├── test_user_schema.py
+      ├── test_otp_utils.py
+      └── test_jwt_utils.py
 ```
 
 ## License
@@ -102,6 +129,7 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 - [Alembic](https://alembic.sqlalchemy.org/)
 - [Flask-Bcrypt](https://flask-bcrypt.readthedocs.io/)
+- [Postman](https://www.postman.com/) for API testing.
 
 ## Contact
 
