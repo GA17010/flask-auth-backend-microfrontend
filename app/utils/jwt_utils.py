@@ -1,6 +1,7 @@
 import jwt
 from datetime import datetime
-from flask import current_app
+from flask import current_app, request, jsonify
+from functools import wraps
 
 def create_access_token(identity):
     expires = datetime.now(current_app.config['TIME_ZONE']) + current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
@@ -34,3 +35,22 @@ def verify_token(token: str, token_type: str):
         return None, 'Token expirado'
     except jwt.InvalidTokenError:
         return None, 'Token inválido'
+    
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        access_token_cookie = request.cookies.get('accessToken')
+
+        if not access_token_cookie:
+            return {'data': {'message': 'No autorizado'}}, 401
+
+        payload, error = verify_token(access_token_cookie, "access")
+
+        if error:
+            return jsonify({'data': {'message': error}}), 401
+        if payload and payload.get('user_agent') != request.headers.get('User-Agent'):
+            return jsonify({'data': {'message': 'User-Agent no coincide'}}), 403
+
+        return f(*args, **kwargs)
+
+    return decorated
