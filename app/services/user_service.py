@@ -20,22 +20,22 @@ def create_new_user(user_data):
 
 def delete_user(user):
     if not user:
-        return jsonify({"data": {"message": "Usuario no encontrado"}}), 404
+        return jsonify({"data": {"message": "User not found"}}), 404
     
     try:
         db.session.delete(user)
         db.session.commit()
-        return jsonify({"data": {"message": "Usuario eliminado exitosamente"}}), 200
+        return jsonify({"data": {"message": "User successfully removed"}}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"data": {"message": "Error Interno del Servidor"}}), 500
+        return jsonify({"data": {"message": "Error deleting user"}}), 500
     
 def update_password_user(user):
     if not user:
-        return jsonify({"data": {"message": "Usuario no encontrado"}}), 404
+        return jsonify({"data": {"message": "User not found"}}), 404
     
     try:
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"data": {"message": "Error Interno del Servidor"}}), 500
+        return jsonify({"data": {"message": "Error updating password"}}), 500
